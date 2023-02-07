@@ -35,8 +35,14 @@ class PrimaryButton: UIButton {
 // MARK: - Extension for styling
 
 extension PrimaryButton {
+    
+    override open var isHighlighted: Bool {
+        didSet {
+            backgroundColor = isHighlighted ? UIColor.middleGraySurf : UIColor.blackSurf
+        }
+    }
         
-    public func applyStyle() {
+    private func applyStyle() {
         layer.cornerRadius = 30
         backgroundColor = .blackSurf
         setTitleColor(.whiteSurf)

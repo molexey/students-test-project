@@ -61,7 +61,7 @@ public enum ChoiceChipSize {
 class ChoiceChip: UIButton {
 
     // MARK: - Public properties
-    
+        
     var style: ChoiceChipStyle = .deselected {
         didSet {
             applyStyle()
@@ -70,6 +70,12 @@ class ChoiceChip: UIButton {
     var size: ChoiceChipSize = .large {
         didSet {
             applyStyle()
+        }
+    }
+        
+    override open var isHighlighted: Bool {
+        didSet {
+            backgroundColor = isHighlighted ? UIColor.middleGraySurf : style.backgroundColor
         }
     }
     
