@@ -59,7 +59,14 @@ class ChoiceSpecializationView: UIView {
     
     // MARK: - Actions
     
-    @objc func choiceChipTapped(_ sender: UIButton) {
+    @objc func choiceChipTapped(_ sender: ChoiceChip) {
+        if let index = specializationСhips.firstIndex(of: (sender)) {
+            let offset = specializationСhips.prefix(index).reduce(0, { offset, chip in
+                offset + chip.frame.width + 12
+            })
+            scrollView.setContentOffset(CGPoint(x: offset, y: 0), animated: true)
+        }
+        
         if let title = sender.titleLabel?.text {
             selectedChip = title
             selectChip(title)
