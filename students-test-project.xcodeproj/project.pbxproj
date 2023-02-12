@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CEAE46B0299975360067A45E /* ChoiceSpecializationCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEAE46AF299975360067A45E /* ChoiceSpecializationCollectionViewCell.swift */; };
+		CEAE46B2299976CE0067A45E /* ChoiceSpecializationCollectionCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEAE46B1299976CE0067A45E /* ChoiceSpecializationCollectionCellModel.swift */; };
 		CEC9492229914DDF0065DFC3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC9492129914DDF0065DFC3 /* AppDelegate.swift */; };
 		CEC9492429914DDF0065DFC3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC9492329914DDF0065DFC3 /* SceneDelegate.swift */; };
 		CEC9492629914DDF0065DFC3 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC9492529914DDF0065DFC3 /* MainViewController.swift */; };
@@ -21,6 +23,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		CEAE46AF299975360067A45E /* ChoiceSpecializationCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoiceSpecializationCollectionViewCell.swift; sourceTree = "<group>"; };
+		CEAE46B1299976CE0067A45E /* ChoiceSpecializationCollectionCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoiceSpecializationCollectionCellModel.swift; sourceTree = "<group>"; };
 		CEC9491E29914DDF0065DFC3 /* students-test-project.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "students-test-project.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEC9492129914DDF0065DFC3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CEC9492329914DDF0065DFC3 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -51,6 +55,8 @@
 			isa = PBXGroup;
 			children = (
 				CECBB3432992799B00463309 /* ChoiceSpecializationView.swift */,
+				CEAE46AF299975360067A45E /* ChoiceSpecializationCollectionViewCell.swift */,
+				CEAE46B1299976CE0067A45E /* ChoiceSpecializationCollectionCellModel.swift */,
 				CECBB3472992A6EB00463309 /* PrimaryButton.swift */,
 				CECBB34B2992B9E200463309 /* ChoiceChip.swift */,
 			);
@@ -169,10 +175,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEAE46B0299975360067A45E /* ChoiceSpecializationCollectionViewCell.swift in Sources */,
 				CECBB3482992A6EB00463309 /* PrimaryButton.swift in Sources */,
 				CECBB34A2992A79E00463309 /* UIColor.swift in Sources */,
 				CECBB34C2992B9E200463309 /* ChoiceChip.swift in Sources */,
 				CECBB34629927C9F00463309 /* UIButton.swift in Sources */,
+				CEAE46B2299976CE0067A45E /* ChoiceSpecializationCollectionCellModel.swift in Sources */,
 				CEC9492629914DDF0065DFC3 /* MainViewController.swift in Sources */,
 				CECBB3442992799B00463309 /* ChoiceSpecializationView.swift in Sources */,
 				CEC9492229914DDF0065DFC3 /* AppDelegate.swift in Sources */,

@@ -48,13 +48,41 @@ class MainViewController: UIViewController {
         label.numberOfLines = 0
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.2
-        label.attributedText = NSMutableAttributedString(string: "Работай над реальными задачами под руководством опытного наставника и получи возможность стать частью команды мечты. ", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        label.attributedText = NSMutableAttributedString(string: "Работай над реальными задачами под руководством опытного наставника и получи возможность стать частью команды мечты.", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
         label.font = .systemFont(ofSize: 14, weight: .regular)
         label.textColor = .middleGraySurf
        return label
     }()
     
     private lazy var choiceSpecializationView = ChoiceSpecializationView()
+    
+    private lazy var collectionViewHeightConstraint = NSLayoutConstraint()
+    
+    private lazy var secondSubtitleLabel: UILabel = {
+        let label = UILabel()
+        label.numberOfLines = 0
+        var paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineHeightMultiple = 1.2
+        label.attributedText = NSMutableAttributedString(string: "Получай стипендию, выстраивай удобный график, работай на современном железе.", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.textColor = .middleGraySurf
+       return label
+    }()
+    
+    private lazy var specializationCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 12
+        layout.estimatedItemSize = .init(width: 80, height: 41)
+        layout.minimumInteritemSpacing = 12
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.register(ChoiceSpecializationCollectionViewCell.self, forCellWithReuseIdentifier: ChoiceSpecializationCollectionViewCell.reuseId)
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.isPagingEnabled = true
+        return collectionView
+    }()
     
     private lazy var joinUsLabel: UILabel = {
         let label = UILabel()
@@ -73,6 +101,8 @@ class MainViewController: UIViewController {
     }()
     
     // MARK: - Private properties
+    
+    private let specializations = ["iOS", "Android", "Design", "Flutter", "QA", "PM", "0123456789"]
     
     private let defaultHeight: CGFloat = 334
     private let maximumContainerHeight: CGFloat = UIScreen.main.bounds.height - 64
@@ -188,6 +218,19 @@ class MainViewController: UIViewController {
         choiceSpecializationView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         choiceSpecializationView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         
+        internshipView.addSubview(secondSubtitleLabel)
+        secondSubtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        secondSubtitleLabel.topAnchor.constraint(equalTo: choiceSpecializationView.bottomAnchor, constant: 24).isActive = true
+        secondSubtitleLabel.leadingAnchor.constraint(equalTo: internshipView.leadingAnchor, constant: 20).isActive = true
+        secondSubtitleLabel.trailingAnchor.constraint(equalTo: internshipView.trailingAnchor, constant: -20).isActive = true
+        
+        internshipView.addSubview(specializationCollectionView)
+        specializationCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        specializationCollectionView.topAnchor.constraint(equalTo: secondSubtitleLabel.bottomAnchor, constant: 12).isActive = true
+        specializationCollectionView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        specializationCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        specializationCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
+        
         internshipView.addSubview(sendButton)
         sendButton.translatesAutoresizingMaskIntoConstraints = false
         sendButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
@@ -214,4 +257,36 @@ class MainViewController: UIViewController {
         present(alertController, animated: true, completion: nil)
     }
 
+}
+
+// MARK: Extension for UICollectionViewFlowLayout delegate
+
+extension MainViewController: UICollectionViewDelegateFlowLayout {
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: UIScreen.main.bounds.width, height: collectionViewHeightConstraint.constant)
+    }
+}
+
+// MARK: Extension for UICollectionView DataSource
+
+extension MainViewController: UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return specializations.map({ ChoiceSpecializationCollectionCellModel($0) }).count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let data = specializations.map({ ChoiceSpecializationCollectionCellModel($0) })
+        return data[indexPath.item].cellForCollectionView(collectionView: collectionView, atIndexPath: indexPath) ?? UICollectionViewCell()
+    }
+}
+
+// MARK: Extension for UICollectionView delegate
+
+extension MainViewController: UICollectionViewDelegate {
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        // TODO:
+    }
 }
