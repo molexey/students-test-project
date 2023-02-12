@@ -11,41 +11,28 @@ class MainViewController: UIViewController {
     
     // MARK: - Views
     
-    private lazy var scrollView: UIScrollView = {
-        let view = UIScrollView()
-        view.showsVerticalScrollIndicator = false
-        view.isScrollEnabled = true
-        view.alwaysBounceVertical = false
-        view.bounces = false
-        return view
-    }()
-    
-    private lazy var contentView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .clear
-        return view
-    }()
-    
     private lazy var imageView: UIImageView = {
         let view = UIImageView()
         view.image = UIImage(named: "3 6")
         view.contentMode = .scaleAspectFill
         return view
     }()
-    
+        
     private lazy var internshipView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 32.0
         view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         view.backgroundColor = .white
+        view.clipsToBounds = true
         return view
     }()
-    
-    private lazy var stackView: UIStackView = {
-        let view = UIStackView()
-        view.axis = .vertical
-        view.spacing = 12
-        return view
+        
+    lazy var stackView: UIStackView = {
+        let spacer = UIView()
+        let stackView = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
+        stackView.axis = .vertical
+        stackView.spacing = 12.0
+        return stackView
     }()
     
     private lazy var titleLabel: UILabel = {
@@ -85,12 +72,28 @@ class MainViewController: UIViewController {
         return button
     }()
     
+    // MARK: - Private properties
+    
+    private let defaultHeight: CGFloat = 334
+    private let maximumContainerHeight: CGFloat = UIScreen.main.bounds.height - 64
+    
+    private var currentContainerHeight: CGFloat = 334
+    private var containerViewHeightConstraint: NSLayoutConstraint?
+    private var containerViewBottomConstraint: NSLayoutConstraint?
+    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupUI()
+        setupPanGesture()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        animateShowImageView()
+        animatePresentContainer()
     }
     
     // MARK: - Actions
@@ -101,45 +104,84 @@ class MainViewController: UIViewController {
     
     // MARK: - Private methods
     
+    private func setupPanGesture() {
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGesture(gesture:)))
+        panGesture.delaysTouchesBegan = false
+        panGesture.delaysTouchesEnded = false
+        view.addGestureRecognizer(panGesture)
+    }
+        
+    @objc private func handlePanGesture(gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: view)
+        debugPrint("Pan gesture translation.y: \(translation.y)")
+        
+        let isDraggingDown = translation.y > 0
+        debugPrint("Dragging direction: \(isDraggingDown ? "going down" : "going up")")
+        
+        let newHeight = currentContainerHeight - translation.y
+        
+        switch gesture.state {
+        case .changed:
+            if newHeight < maximumContainerHeight {
+                containerViewHeightConstraint?.constant = newHeight
+                view.layoutIfNeeded()
+            }
+        case .ended:
+            if newHeight < defaultHeight {
+                animateContainerHeight(defaultHeight)
+            }
+            else if newHeight < maximumContainerHeight && isDraggingDown {
+                animateContainerHeight(defaultHeight)
+            }
+            else if newHeight > defaultHeight && !isDraggingDown {
+                animateContainerHeight(maximumContainerHeight)
+            }
+        default:
+            break
+        }
+    }
+    
+    private func animateContainerHeight(_ height: CGFloat) {
+        UIView.animate(withDuration: 0.4) {
+            self.containerViewHeightConstraint?.constant = height
+            self.view.layoutIfNeeded()
+        }
+        currentContainerHeight = height
+    }
+    
+    private func animatePresentContainer() {
+        UIView.animate(withDuration: 0.3) {
+            self.containerViewBottomConstraint?.constant = 0
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    private func animateShowImageView() {
+        imageView.alpha = 0
+        UIView.animate(withDuration: 0.4) {
+            self.imageView.alpha = 1.0
+        }
+    }
+    
     private func setupUI() {
-        view.addSubview(scrollView)
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
-        scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-        scrollView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-        scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
-        
-        scrollView.addSubview(contentView)
-        contentView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: 0).isActive = true
-        contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 0).isActive = true
-        contentView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0).isActive = true
-        contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 0).isActive = true
-        contentView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: 0).isActive = true
-        
-        contentView.addSubview(imageView)
+        view.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 500).isActive = true
-        imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0).isActive = true
-        imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0).isActive = true
+        imageView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        imageView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         
-        contentView.addSubview(internshipView)
+        view.addSubview(internshipView)
         internshipView.translatesAutoresizingMaskIntoConstraints = false
-        internshipView.heightAnchor.constraint(equalToConstant: 600).isActive = true
-        internshipView.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: -20).isActive = true
-        internshipView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
-        internshipView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0).isActive = true
-        internshipView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0).isActive = true
+        internshipView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        internshipView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         
         internshipView.addSubview(stackView)
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.topAnchor.constraint(equalTo: internshipView.topAnchor, constant: 24).isActive = true
         stackView.leadingAnchor.constraint(equalTo: internshipView.leadingAnchor, constant: 20).isActive = true
         stackView.trailingAnchor.constraint(equalTo: internshipView.trailingAnchor, constant: -20).isActive = true
-        stackView.addArrangedSubview(titleLabel)
-        stackView.addArrangedSubview(subtitleLabel)
-
+        
         internshipView.addSubview(choiceSpecializationView)
         choiceSpecializationView.translatesAutoresizingMaskIntoConstraints = false
         choiceSpecializationView.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 12).isActive = true
@@ -158,6 +200,11 @@ class MainViewController: UIViewController {
         joinUsLabel.centerYAnchor.constraint(equalTo: sendButton.centerYAnchor).isActive = true
         joinUsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         joinUsLabel.trailingAnchor.constraint(equalTo: sendButton.leadingAnchor, constant: -20).isActive = true
+        
+        containerViewHeightConstraint = internshipView.heightAnchor.constraint(equalToConstant: defaultHeight)
+        containerViewHeightConstraint?.isActive = true
+        containerViewBottomConstraint = internshipView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: defaultHeight)
+        containerViewBottomConstraint?.isActive = true
     }
     
     public func showAlert(_ alertTitle: String? = nil, andAlertMessage alertMessage: String? = nil, andButtonTitle buttonTitle: String? = "Ok", completion: ((UIAlertAction) -> Void)? = nil) {
